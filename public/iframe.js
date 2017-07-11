@@ -9,10 +9,10 @@ class iframeListener {
 
     constructor(origin, hashGenerator) {
 
-        var hashGenerator = hashGenerator || uuidv4,   // use default unique hash generator if not specified
-            namespace = hashGenerator(),               // create a hash for the namespace
-            callbackListeners = {},                    // create a mapping for callback listeners
-            iframeLoadStates = {};                     // create a mapping for iframe load states
+        var hashGenerator = hashGenerator || uuidv4;     // use default unique hash generator if not specified
+        const namespace = hashGenerator(),               // create a hash for the namespace
+              callbackListeners = {},                    // create a mapping for callback listeners
+              iframeLoadStates = {};                     // create a mapping for iframe load states
 
         // listener handler of parent
         window.addEventListener("message", event => {
@@ -69,8 +69,8 @@ class iframeListener {
             window.addEventListener(namespace + event_name, event => {
                 if (event.srcElement == window) {
                     var data = event.detail.data;
-                    cb(data, data => {
-                        var name = event.detail.name;
+                    var name = event.detail.name;
+                    cb(data, name, data => {
                         var cid = event.detail.cid;
                         var res = {data, cid};
                         if (name) {  // if came from child

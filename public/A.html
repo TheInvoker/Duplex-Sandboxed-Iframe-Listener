@@ -10,7 +10,7 @@
         <script>
             var ifl = new iframeListener();
             
-            ifl.setIframeListener("event1", (data, cb) => {
+            ifl.setIframeListener("event1", (data, iframe_name, cb) => {
                 alert(data);
                 cb("sendfromchild_callback");
             });

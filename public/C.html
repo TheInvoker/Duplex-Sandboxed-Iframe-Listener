@@ -9,9 +9,12 @@
         <script>
             var ifl = new iframeListener();
 
-            ifl.setIframeListener("event4", (data, cb) => {
+            ifl.setIframeListener("event4", (data, iframe_name, cb) => {
                 alert(data);
                 cb("sendtograndchild_callback");
+            });
+            
+            ifl.postMessageToParent("onParentListenerReady", {}, data => {
             });
 
             ifl.postMessageToParent("event3", "sendfromggrandchild", data => {
