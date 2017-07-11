@@ -26,7 +26,7 @@ var ifl = new iframeListener(); // has 1 optional parameter which is a function 
 
 Listen for events:
 ```
-ifl.setIframeListener("myevent", (data, cb) => {
+ifl.setIframeListener("myevent", (data, iframe_name, cb) => {
 	alert(data);
 	cb("myevent_callback");  // callback that accepts 1 paramater which is your data you want to send back
 });
@@ -51,5 +51,7 @@ ifl.postMessageToParent("myevent_forparent", "some data", data => {
 	alert(data);
 });
 ```
+
+Note that, when a child talks sends a message to the parent, it should be fine, but a parent must wait until the child has set up the listener before sending a message for that listener. You can set it up like in the demo so that the child first sets up its listeners, then sends a message to the parent indicating it is ready. The parent then starts sending messages to the child. This gaunruntees listeners will be ready.
 
 Tested only on Google Chrome Version 60.0.3112.50 (Official Build) beta (64-bit).
