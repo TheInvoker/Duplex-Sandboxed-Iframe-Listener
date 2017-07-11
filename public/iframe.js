@@ -11,8 +11,7 @@ class iframeListener {
 
         var hashGenerator = hashGenerator || uuidv4;     // use default unique hash generator if not specified
         const namespace = hashGenerator(),               // create a hash for the namespace
-              callbackListeners = {},                    // create a mapping for callback listeners
-              iframeLoadStates = {};                     // create a mapping for iframe load states
+              callbackListeners = {};                    // create a mapping for callback listeners
 
         // listener handler of parent
         window.addEventListener("message", event => {
@@ -36,11 +35,6 @@ class iframeListener {
             var iframe = document.createElement('iframe');
             iframe.src = src;
             iframe.name = hashGenerator();
-            iframe.onload = () => {
-                var context = getContext(iframe);
-                runQueue(context.iframe, context.queue);
-                context.loaded = true;
-            };
             iframe.sandbox = flags;
             return iframe;
         };
@@ -96,29 +90,9 @@ class iframeListener {
             if (to == parent) { // post to parent
                 to.postMessage(data, "*");
             } else { // post to child which you need to wait for load
-                var context = getContext(to);
-                context.queue.push(data);
-                if (context.loaded) {
-                    runQueue(context.iframe, context.queue);
-                }
+                var cw = to.contentWindow;
+                cw.postMessage(data, "*");
             }
-        }
-
-        function getContext(iframe) {
-            var context = iframeLoadStates[iframe.name];
-            if (!context) {
-                context = {queue : [], loaded : false, iframe};
-                iframeLoadStates[iframe.name] = context;
-            }
-            return context;
-        }
-
-        function runQueue(iframe, queue) {
-            var cw = iframe.contentWindow;
-            queue.forEach(function(element) {
-                cw.postMessage(element, "*");
-            }, this);
-            queue.length = 0;
         }
 
         /**

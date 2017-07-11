@@ -10,17 +10,25 @@
         <script>
             var ifl = new iframeListener();
             
+            var ifr = ifl.getSandBoxedIframe("B.html", "allow-forms allow-modals allow-scripts allow-popups");
+            document.body.appendChild(ifr);
+
             ifl.setIframeListener("event1", (data, iframe_name, cb) => {
                 alert(data);
                 cb("sendfromchild_callback");
             });
 
-            var ifr = ifl.getSandBoxedIframe("B.html", "allow-forms allow-modals allow-scripts allow-popups");
-            document.body.appendChild(ifr);
-
-            ifl.postMessageToChild(ifr, "event2", "sendfromparent", data => {
-                alert(data);
+            ifl.setIframeListener("childReady", (data, iframe_name, cb) => {
+                cb({});
+                
+                var iframe = document.querySelector("iframe[name='" + iframe_name + "']");
+                if (iframe == ifr) {
+                    ifl.postMessageToChild(ifr, "event2", "sendfromparent", data => {
+                        alert(data);
+                    });
+                }
             });
+
         </script>
     </body>
 </html> 
