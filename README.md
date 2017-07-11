@@ -52,6 +52,6 @@ ifl.postMessageToParent("myevent_forparent", "some data", data => {
 });
 ```
 
-Note that, when a child talks sends a message to the parent, it should be fine, but a parent must wait until the child has set up the listener before sending a message for that listener. You can set it up like in the demo so that the child first sets up its listeners, then sends a message to the parent indicating it is ready. The parent then starts sending messages to the child. This gaunruntees listeners will be ready.
+Note that, when a child talks sends a message to the parent, it should be fine, but a parent must wait until the child has set up the listener before sending a message for that listener. You can set it up like in the demo so that the child first sets up its listeners, then sends a message to the parent indicating it is ready. The parent then starts sending messages to the child. This guarantees listeners will be ready.
 
 Tested only on Google Chrome Version 60.0.3112.50 (Official Build) beta (64-bit).
