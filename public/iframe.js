@@ -7,34 +7,26 @@
  */
 class iframeListener {
 
-    constructor(hashGenerator) {
+    constructor(origin, hashGenerator) {
 
         var hashGenerator = hashGenerator || uuidv4,   // use default unique hash generator if not specified
             namespace = hashGenerator(),               // create a hash for the namespace
-            iframeLoadListenerHash = hashGenerator(),  // create a hash for the iframe load event
             callbackListeners = {},                    // create a mapping for callback listeners
             iframeLoadStates = {};                     // create a mapping for iframe load states
 
         // listener handler of parent
         window.addEventListener("message", event => {
-            var cid = event.data.cid;
-            var data = event.data.data;
-            var event_name = event.data.event_name;
-
-            if (event_name) { // recieving response from parent or child
-                window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data}));
-            } else {  // in response to sending data to parent or child
-                var func = callbackListeners[cid];
-                if (func) func(data);
+            if (origin == null || event.origin == origin) {
+                var cid = event.data.cid;
+                var data = event.data.data;
+                var event_name = event.data.event_name;
+                if (event_name) { // recieving response from parent or child
+                    window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data}));
+                } else {  // in response to sending data to parent or child
+                    var func = callbackListeners[cid];
+                    if (func) func(data);
+                }
             }
-        }, false);
-
-        // listen for iframe load events
-        window.addEventListener(iframeLoadListenerHash, function (e) {
-            var iframe = e.detail;
-            var context = getContext(iframe);
-            runQueue(context.iframe, context.queue);
-            context.loaded = true;
         }, false);
 
         /**
@@ -44,7 +36,11 @@ class iframeListener {
             var iframe = document.createElement('iframe');
             iframe.src = src;
             iframe.name = hashGenerator();
-            iframe.onload = () => {window.dispatchEvent(new CustomEvent(iframeLoadListenerHash, {detail:iframe}))};
+            iframe.onload = () => {
+                var context = getContext(iframe);
+                runQueue(context.iframe, context.queue);
+                context.loaded = true;
+            };
             iframe.sandbox = flags;
             return iframe;
         };
@@ -71,17 +67,19 @@ class iframeListener {
          */
         this.setIframeListener = function(event_name, cb) {
             window.addEventListener(namespace + event_name, event => {
-                var data = event.detail.data;
-                cb(data, data => {
-                    var name = event.detail.name;
-                    var cid = event.detail.cid;
-                    var res = {data, cid};
-                    if (name) {  // if came from child
-                        postHelper(document.querySelector("iframe[name='" + name + "']"), res);
-                    } else {  // if came from parent
-                        postHelper(parent, res);
-                    }
-                });
+                if (event.srcElement == window) {
+                    var data = event.detail.data;
+                    cb(data, data => {
+                        var name = event.detail.name;
+                        var cid = event.detail.cid;
+                        var res = {data, cid};
+                        if (name) {  // if came from child
+                            postHelper(document.querySelector("iframe[name='" + name + "']"), res);
+                        } else {  // if came from parent
+                            postHelper(parent, res);
+                        }
+                    });
+                }
             }, false);
         };
 
