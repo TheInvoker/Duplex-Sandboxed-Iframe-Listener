@@ -1,4 +1,5 @@
-# Duplex-Sandboxed-Iframe-Listener
+# Duplex-Sandboxed-Iframe-Listener (DSIL)
+### pronounced like 'diesel'
 A library to handle duplex asynchronous communications between parent and child sandboxed iframes. Does not use jquery, it is fully native es6 javascript.
 
 How to run demo:
