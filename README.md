@@ -4,6 +4,8 @@ A fully native es6 javascript library to handle duplex asynchronous communicatio
 
 How to run demo:
 
+First clone and cd into the root folder
+
 ```
 npm install express
 node server
