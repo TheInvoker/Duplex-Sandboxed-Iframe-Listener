@@ -1,7 +1,7 @@
 # Duplex-Sandboxed-Iframe-Listener
 A library to handle duplex asynchronous communications between parent and child sandboxed iframes. Does not use jquery, it is fully native es6 javascript.
 
-How to run:
+How to run demo:
 
 ```
 npm install express
@@ -10,7 +10,7 @@ node server
 
 Open http://localhost:3000/A.html
 
-You will then get 8 alert messages. The black arrows indicates sending a message to the event name. The red arrows represent the callbacks. Data must be serializable to send, so naturally you can send JSON objects too. 
+You will then get 8 alert messages. A.html has an iframe that loads B.html and B.html has an iframe that loads C.html. The black arrows indicates sending a message to the event name. The red arrows represent the callbacks. Data must be serializable to send, so naturally you can send JSON objects too. 
 
 ![alt text](https://raw.githubusercontent.com/TheInvoker/Duplex-Sandboxed-Iframe-Listener/master/DISL.png)
 
@@ -31,8 +31,8 @@ ifl.setIframeListener("myevent", (data, cb) => {
 
 Create an iframe that can post and listen, and add to DOM:
 ```
-var ifr = ifl.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups");
-document.body.appendChild(ifr);
+var ifr = ifl.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
+document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 ```
 
 Send data to child:
