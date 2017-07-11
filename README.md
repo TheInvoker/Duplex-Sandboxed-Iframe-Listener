@@ -21,7 +21,7 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 Create a listener:
 ```
-var ifl = new iframeListener(); // has 1 optional parameter which is a function that takes 0 parameters and returns a unique hash
+var ifl = new iframeListener(); // has 2 optional parameters, first is origin, and second is a function that takes 0 parameters and returns a unique hash
 ```
 
 Listen for events:
