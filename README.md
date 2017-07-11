@@ -2,7 +2,7 @@
 ### pronounced like 'diesel'
 A fully native es6 javascript library to handle duplex asynchronous communications between parent and child sandboxed iframes.
 
-How to run demo:
+## How to run demo:
 
 First clone and cd into the root folder
 
