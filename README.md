@@ -48,3 +48,5 @@ ifl.postMessageToParent("myevent_forparent", "some data", data => {
 	alert(data);
 });
 ```
+
+Tested only on Google Chrome Version 60.0.3112.50 (Official Build) beta (64-bit).
