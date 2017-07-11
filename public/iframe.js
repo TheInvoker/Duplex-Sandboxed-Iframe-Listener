@@ -24,7 +24,8 @@ class iframeListener {
             if (event_name) { // recieving response from parent or child
                 window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data}));
             } else {  // in response to sending data to parent or child
-                callbackListeners[cid](data);
+                var func = callbackListeners[cid];
+                if (func) func(data);
             }
         }, false);
 

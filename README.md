@@ -14,29 +14,22 @@ You will then get 8 alert messages. The black arrows indicates sending a message
 
 ![alt text](https://raw.githubusercontent.com/TheInvoker/Duplex-Sandboxed-Iframe-Listener/master/DISL.png)
 
-Actual API
+## Actual API
 
 Create a listener:
 ```
 var ifl = new iframeListener();
 ```
 
-Listen on an event:
+Listen for events:
 ```
 ifl.setIframeListener("myevent", (data, cb) => {
 	alert(data);
-	cb("myevent_callback");
+	cb("myevent_callback");  // callback that accepts 1 paramater which is your data you want to send back
 });
 ```
 
-Send data to parent:
-```
-ifl.postMessageToParent("myevent_forparent", "some data", data => {
-	alert(data);
-});
-```
-
-Create an iframe that can post and listen:
+Create an iframe that can post and listen, and add to DOM:
 ```
 var ifr = ifl.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups");
 document.body.appendChild(ifr);
@@ -45,6 +38,13 @@ document.body.appendChild(ifr);
 Send data to child:
 ```
 ifl.postMessageToChild(ifr, "myevent_forchild", "some data", data => {
+	alert(data);
+});
+```
+
+Send data to parent:
+```
+ifl.postMessageToParent("myevent_forparent", "some data", data => {
 	alert(data);
 });
 ```
