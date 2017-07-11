@@ -1,0 +1,35 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>B</title>
+        <script src="iframe.js"></script>
+    </head>
+    <body>
+        B
+        <br/>
+        <script>
+            var ifl = new iframeListener();
+
+            ifl.setIframeListener("event2", (data, cb) => {
+                alert(data);
+                cb("sendfromparent_callback");
+            });
+        
+            ifl.setIframeListener("event3", (data, cb) => {
+                alert(data);
+                cb("sendfromggrandchild_callback");
+            });
+
+            ifl.postMessageToParent("event1", "sendfromchild", data => {
+                alert(data);
+            });
+
+            var ifr = ifl.getSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
+            document.body.appendChild(ifr);
+
+            ifl.postMessageToChild(ifr, "event4", "sendtograndchild", data => {
+                alert(data);
+            });
+        </script>
+    </body>
+</html> 

@@ -1,0 +1,22 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>C</title>
+        <script src="iframe.js"></script>
+    </head>
+    <body>
+        C
+        <script>
+            var ifl = new iframeListener();
+
+            ifl.setIframeListener("event4", (data, cb) => {
+                alert(data);
+                cb("sendtograndchild_callback");
+            });
+
+            ifl.postMessageToParent("event3", "sendfromggrandchild", data => {
+                alert(data);
+            });
+        </script>
+    </body>
+</html> 

@@ -1,0 +1,26 @@
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>A</title>
+        <script src="iframe.js"></script>
+    </head>
+    <body>
+        A
+        <br/>
+        <script>
+            var ifl = new iframeListener();
+            
+            ifl.setIframeListener("event1", (data, cb) => {
+                alert(data);
+                cb("sendfromchild_callback");
+            });
+
+            var ifr = ifl.getSandBoxedIframe("B.html", "allow-forms allow-modals allow-scripts allow-popups");
+            document.body.appendChild(ifr);
+
+            ifl.postMessageToChild(ifr, "event2", "sendfromparent", data => {
+                alert(data);
+            });
+        </script>
+    </body>
+</html> 
