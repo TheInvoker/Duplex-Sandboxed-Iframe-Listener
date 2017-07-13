@@ -19,7 +19,7 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 ## Actual API
 
-Create a listener:
+Create a communications object:
 ```
 var ifl = new iframeListener(); // has 2 optional parameters, first is origin, and second is a function that takes 0 parameters and returns a unique hash
 ```
