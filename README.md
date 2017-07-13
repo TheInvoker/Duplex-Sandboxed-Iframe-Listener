@@ -64,7 +64,7 @@ document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 
 Send data to child:
 ```
-ifl.postMessageToChild(ifr, "myevent_forchild", "some data", data => { // only sends once its load event runs which only happens when you add it to the DOM
+ifl.postMessageToChild(iframes, "myevent_forchild", "some data", data => { // only sends once its load event runs which only happens when you add it to the DOM, iframes is an array of iframes
 	alert(data);
 });
 ```

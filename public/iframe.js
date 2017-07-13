@@ -66,8 +66,10 @@ class iframeListener {
         /**
          * 
          */
-        this.postMessageToChild = function(iframe, event_name, data, cb) {
-            postMessage(iframe, event_name, data, cb, () => {});
+        this.postMessageToChild = function(iframes, event_name, data, cb) {
+            iframes.forEach(function(iframe) {
+                postMessage(iframe, event_name, data, cb, () => {});
+            });
         };
 
         // set listener on self

@@ -21,7 +21,7 @@
             ifl.setChildrenIframeListener([ifr], "childReady", (data, iframe, cb) => {
                 cb({});
                 
-                ifl.postMessageToChild(iframe, "event2", "sendfromparent", data => {
+                ifl.postMessageToChild([iframe], "event2", "sendfromparent", data => {
                     alert(data);
                 });
             });
