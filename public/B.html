@@ -10,15 +10,15 @@
         <script>
             var ifl = new iframeListener();
 
-            var ifr = ifl.getSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
+            var ifr = ifl.createSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
             document.body.appendChild(ifr);
 
-            ifl.setIframeListener("event2", (data, iframe_name, cb) => {
+            ifl.setIframeListener("event2", (data, parentoriframe, cb) => {
                 alert(data);
                 cb("sendfromparent_callback");
             });
 
-            ifl.setIframeListener("event3", (data, iframe_name, cb) => {
+            ifl.setIframeListener("event3", (data, parentoriframe, cb) => {
                 alert(data);
                 cb("sendfromggrandchild_callback");
             });
@@ -30,15 +30,12 @@
                 alert(data);
             });
 
-            ifl.setIframeListener("childReady", (data, iframe_name, cb) => {
+            ifl.setChildrenIframeListener([ifr], "childReady", (data, iframe, cb) => {
                 cb({});
                 
-                var iframe = document.querySelector("iframe[name='" + iframe_name + "']");
-                if (iframe == ifr) {
-                    ifl.postMessageToChild(ifr, "event4", "sendtograndchild", data => {
-                        alert(data);
-                    });
-                }
+                ifl.postMessageToChild(iframe, "event4", "sendtograndchild", data => {
+                    alert(data);
+                });
             });
         </script>
     </body>

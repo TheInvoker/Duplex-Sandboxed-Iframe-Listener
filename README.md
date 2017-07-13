@@ -24,11 +24,35 @@ Create a listener:
 var ifl = new iframeListener(); // has 2 optional parameters, first is origin, and second is a function that takes 0 parameters and returns a unique hash
 ```
 
-Listen for events:
+Listen for events from parent or child:
 ```
-ifl.setIframeListener("myevent", (data, iframe_name, cb) => {
+ifl.setIframeListener("myevent", (data, parentoriframe, cb) => { 
 	alert(data);
 	cb("myevent_callback");  // callback that accepts 1 paramater which is your data you want to send back
+});
+```
+
+Listen for events from the parent:
+```
+ifl.setParentIframeListener("myevent", (data, parent, cb) => { 
+	alert(data);
+	cb("myevent_callback"); 
+});
+```
+
+Listen for events from specified children:
+```
+ifl.setChildrenIframeListener(iframes, "myevent", (data, iframe, cb) => {   // iframes is an array of iframes
+	alert(data);
+	cb("myevent_callback"); 
+});
+```
+
+Listen for events from any children:
+```
+ifl.setAnyChildIframeListener("myevent", (data, iframe, cb) => {   // iframes is an array of iframes
+	alert(data);
+	cb("myevent_callback"); 
 });
 ```
 

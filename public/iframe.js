@@ -11,6 +11,8 @@ class iframeListener {
 
         var hashGenerator = hashGenerator || uuidv4;     // use default unique hash generator if not specified
         const namespace = hashGenerator(),               // create a hash for the namespace
+              childnamespace = hashGenerator(),          // create a hash for the child namespace
+              parentnamespace = hashGenerator(),         // create a hash for a parent namespace
               callbackListeners = {};                    // create a mapping for callback listeners
 
         // listener handler of parent
@@ -20,7 +22,20 @@ class iframeListener {
                 var data = event.data.data;
                 var event_name = event.data.event_name;
                 if (event_name) { // recieving response from parent or child
-                    window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data}));
+
+                    // hit the general listener
+                    window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data})); 
+
+                    if (event.data.name) { // came from child
+                        // hit the general child listener
+                         window.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
+                        // hit the specific child listener
+                        var iframe = document.querySelector("iframe[name='" + event.data.name + "']"); 
+                        iframe.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
+                    } else {
+                        // hit the general parent listener
+                        window.dispatchEvent(new CustomEvent(parentnamespace + event_name, {detail:event.data})); 
+                    }
                 } else {  // in response to sending data to parent or child
                     var func = callbackListeners[cid];
                     if (func) func(data);
@@ -31,7 +46,7 @@ class iframeListener {
         /**
          * 
          */
-        this.getSandBoxedIframe = function(src, flags) {
+        this.createSandBoxedIframe = function(src, flags) {
             var iframe = document.createElement('iframe');
             iframe.src = src;
             iframe.name = hashGenerator();
@@ -60,22 +75,39 @@ class iframeListener {
          * 
          */
         this.setIframeListener = function(event_name, cb) {
-            window.addEventListener(namespace + event_name, event => {
-                if (event.srcElement == window) {
-                    var data = event.detail.data;
-                    var name = event.detail.name;
-                    cb(data, name, data => {
-                        var cid = event.detail.cid;
-                        var res = {data, cid};
-                        if (name) {  // if came from child
-                            postHelper(document.querySelector("iframe[name='" + name + "']"), res);
-                        } else {  // if came from parent
-                            postHelper(parent, res);
-                        }
-                    });
-                }
-            }, false);
+            setListenerHelper(window, namespace, event_name, cb);
         };
+
+        this.setParentIframeListener = function(event_name, cb) {
+            setListenerHelper(window, parentnamespace, event_name, cb);
+        };
+
+        this.setChildrenIframeListener = function(iframes, event_name, cb) {
+            iframes.forEach(function(iframe) {
+                setListenerHelper(iframe, childnamespace, event_name, cb);
+            });
+        };
+
+        this.setAnyChildIframeListener = function(event_name, cb) {
+            setListenerHelper(window, childnamespace, event_name, cb);
+        };
+
+        function setListenerHelper(scope, namespace, event_name, cb) {
+            scope.addEventListener(namespace + event_name, event => {
+                var data = event.detail.data;
+                var name = event.detail.name;
+                var iframe = document.querySelector("iframe[name='" + name + "']");
+                cb(data, iframe || parent, data => {
+                    var cid = event.detail.cid;
+                    var res = {data, cid};
+                    if (name) {  // if came from child
+                        postHelper(iframe, res);
+                    } else {  // if came from parent
+                        postHelper(parent, res);
+                    }
+                });
+            }, false); 
+        }
 
         // send message to child or parent
         function postMessage(to, event_name, data, cb, processor) {
