@@ -11,19 +11,19 @@
         return define([], () => factory);
     }
     this.iframeListener = factory;
-})(function(origin, hashGenerator) {
+})(function(origin, gen) {
 
     /**
     * This is a pretty cool unique hash generator function which came from these links:
     * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
     * https://gist.github.com/jed/982883
     */
-    const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-    var hashGenerator = hashGenerator || uuidv4;     // use default unique hash generator if not specified
-    const namespace = hashGenerator(),               // create a hash for the namespace
-        childnamespace = hashGenerator(),          // create a hash for the child namespace
-        parentnamespace = hashGenerator(),         // create a hash for a parent namespace
-        callbackListeners = {};                    // create a mapping for callback listeners
+    const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)),
+          hashGenerator = gen || uuidv4,             // use default unique hash generator if not specified
+          namespace = hashGenerator(),               // create a hash for the namespace
+          childnamespace = hashGenerator(),          // create a hash for the child namespace
+          parentnamespace = hashGenerator(),         // create a hash for a parent namespace
+          callbackListeners = {};                    // create a mapping for callback listeners
 
     // listener handler of parent
     window.addEventListener("message", event => {
