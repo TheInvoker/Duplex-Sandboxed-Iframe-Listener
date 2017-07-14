@@ -9,7 +9,7 @@
         <script>
             var ifl = new iframeListener();
 
-            ifl.setIframeListener("event4", (data, parentoriframe, cb) => {
+            ifl.setParentIframeListener("event4", (data, parent, cb) => {
                 alert(data);
                 cb("sendtograndchild_callback");
             });

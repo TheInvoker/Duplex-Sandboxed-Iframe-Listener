@@ -13,12 +13,12 @@
             var ifr = ifl.createSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
             document.body.appendChild(ifr);
 
-            ifl.setIframeListener("event2", (data, parentoriframe, cb) => {
+            ifl.setParentIframeListener("event2", (data, parent, cb) => {
                 alert(data);
                 cb("sendfromparent_callback");
             });
 
-            ifl.setIframeListener("event3", (data, parentoriframe, cb) => {
+            ifl.setChildrenIframeListener([ifr], "event3", (data, iframe, cb) => {
                 alert(data);
                 cb("sendfromggrandchild_callback");
             });
