@@ -13,6 +13,12 @@
     this.iframeListener = factory;
 })(function(origin, hashGenerator) {
 
+    /**
+    * This is a pretty cool unique hash generator function which came from these links:
+    * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    * https://gist.github.com/jed/982883
+    */
+    const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
     var hashGenerator = hashGenerator || uuidv4;     // use default unique hash generator if not specified
     const namespace = hashGenerator(),               // create a hash for the namespace
         childnamespace = hashGenerator(),          // create a hash for the child namespace
@@ -47,58 +53,7 @@
         }
     }, false);
 
-    /**
-    * 
-    */
-    this.createSandBoxedIframe = function(src, flags) {
-        var iframe = document.createElement('iframe');
-        iframe.src = src;
-        iframe.name = hashGenerator();
-        iframe.sandbox = flags;
-        return iframe;
-    };
-
-    /**
-    * 
-    */
-    this.postMessageToParent = function(event_name, data, cb) {
-        postMessage(parent, event_name, data, cb, obj => {
-            obj.name = window.name;
-        });
-    };
-
-    /**
-    * 
-    */
-    this.postMessageToChild = function(iframes, event_name, data, cb) {
-        iframes.forEach(function(iframe) {
-            postMessage(iframe, event_name, data, cb, () => {});
-        });
-    };
-
-    // set listener on self
-    /**
-    * 
-    */
-    this.setIframeListener = function(event_name, cb) {
-        setListenerHelper(window, namespace, event_name, cb);
-    };
-
-    this.setParentIframeListener = function(event_name, cb) {
-        setListenerHelper(window, parentnamespace, event_name, cb);
-    };
-
-    this.setChildrenIframeListener = function(iframes, event_name, cb) {
-        iframes.forEach(function(iframe) {
-            setListenerHelper(iframe, childnamespace, event_name, cb);
-        });
-    };
-
-    this.setAnyChildIframeListener = function(event_name, cb) {
-        setListenerHelper(window, childnamespace, event_name, cb);
-    };
-
-    function setListenerHelper(scope, namespace, event_name, cb) {
+    var setListenerHelper = (scope, namespace, event_name, cb) => {
         scope.addEventListener(namespace + event_name, event => {
             var data = event.detail.data;
             var name = event.detail.name;
@@ -113,10 +68,10 @@
                 }
             });
         }, false); 
-    }
+    };
 
     // send message to child or parent
-    function postMessage(to, event_name, data, cb, processor) {
+    var postMessage = (to, event_name, data, cb, processor) => {
         var cid = hashGenerator();
         callbackListeners[cid] = cb;
         var obj = {event_name, data, cid};
@@ -124,23 +79,63 @@
         postHelper(to, obj);
     };
 
-    function postHelper(to, data) {
+    var postHelper = (to, data) => {
         if (to == parent) { // post to parent
             to.postMessage(data, "*");
         } else { // post to child which you need to wait for load
             var cw = to.contentWindow;
             cw.postMessage(data, "*");
         }
-    }
+    };
 
     /**
-    * This is a pretty cool unique hash generator function which came from these links:
-    * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-    * https://gist.github.com/jed/982883
+    * 
     */
-    function uuidv4() {
-        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
-    }
+    this.createSandBoxedIframe = (src, flags) => {
+        var iframe = document.createElement('iframe');
+        iframe.src = src;
+        iframe.name = hashGenerator();
+        iframe.sandbox = flags;
+        return iframe;
+    };
+
+    /**
+    * 
+    */
+    this.postMessageToParent = (event_name, data, cb) => {
+        postMessage(parent, event_name, data, cb, obj => {
+            obj.name = window.name;
+        });
+    };
+
+    /**
+    * 
+    */
+    this.postMessageToChild = (iframes, event_name, data, cb) => {
+        iframes.forEach(iframe => {
+            postMessage(iframe, event_name, data, cb, () => {});
+        });
+    };
+
+    // set listener on self
+    /**
+    * 
+    */
+    this.setIframeListener = (event_name, cb) => {
+        setListenerHelper(window, namespace, event_name, cb);
+    };
+
+    this.setParentIframeListener = (event_name, cb) => {
+        setListenerHelper(window, parentnamespace, event_name, cb);
+    };
+
+    this.setChildrenIframeListener = (iframes, event_name, cb) => {
+        iframes.forEach(iframe => {
+            setListenerHelper(iframe, childnamespace, event_name, cb);
+        });
+    };
+
+    this.setAnyChildIframeListener = (event_name, cb) => {
+        setListenerHelper(window, childnamespace, event_name, cb);
+    };
 }));
