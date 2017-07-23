@@ -21,7 +21,7 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 Create a communications object:
 ```
-var ifl = new iframeListener(); // has 2 optional parameters, first is origin, and second is a function that takes 0 parameters and returns a unique hash
+var ifl = new iframeListener.listener(); // has 1 optional parameter for origin
 ```
 
 Listen for events from parent or child:
@@ -58,7 +58,13 @@ ifl.setAnyChildIframeListener("myevent", (data, iframe, cb) => {   // iframes is
 
 Create an iframe that can post and listen, and add to DOM:
 ```
-var ifr = ifl.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
+var ifr = iframeListener.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
+document.body.appendChild(ifr); // ifr is a normal iframe DOM element
+```
+
+Use an existing iframe:
+```
+var ifr = iframeListener.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
 document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 ```
 
