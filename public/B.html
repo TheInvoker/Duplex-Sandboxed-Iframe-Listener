@@ -8,11 +8,12 @@
         B
         <br/>
         <script>
-            var ifl = new iframeListener();
 
-            var ifr = ifl.createSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
+            var ifr = iframeListener.createSandBoxedIframe("C.html", "allow-forms allow-modals allow-scripts allow-popups");
             document.body.appendChild(ifr);
 
+			var ifl = new iframeListener.listener();
+			
             ifl.setParentIframeListener("event2", (data, parent, cb) => {
                 alert(data);
                 cb("sendfromparent_callback");

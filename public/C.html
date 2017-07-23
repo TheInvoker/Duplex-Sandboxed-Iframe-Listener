@@ -7,8 +7,9 @@
     <body>
         C
         <script>
-            var ifl = new iframeListener();
 
+			var ifl = new iframeListener.listener();
+				
             ifl.setParentIframeListener("event4", (data, parent, cb) => {
                 alert(data);
                 cb("sendtograndchild_callback");

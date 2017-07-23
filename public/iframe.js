@@ -3,7 +3,7 @@
  *
  * Copyright 2017
  *
- * Date: 2017-07-11 (July 11)
+ * Date: 2017-07-23 (July 23)
  */
 
 ((factory => {
@@ -11,139 +11,145 @@
         return define([], () => factory);
     }
     this.iframeListener = factory;
-})(function(origin, gen) {
+})(new function() {
+	
+	/**
+	* This is a pretty cool unique hash generator function which came from these links:
+	* https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+	* https://gist.github.com/jed/982883
+	*/
+	const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 
-    /**
-    * This is a pretty cool unique hash generator function which came from these links:
-    * https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
-    * https://gist.github.com/jed/982883
-    */
-    const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)),
-          hashGenerator = gen || uuidv4,             // use default unique hash generator if not specified
-          namespace = hashGenerator(),               // create a hash for the namespace
-          childnamespace = hashGenerator(),          // create a hash for the child namespace
-          parentnamespace = hashGenerator(),         // create a hash for a parent namespace
-          callbackListeners = {};                    // create a mapping for callback listeners
+	/**
+	* 
+	*/
+	this.createSandBoxedIframe = (src, flags) => {
+		var iframe = document.createElement('iframe');
+		iframe.src = src;
+		iframe.name = uuidv4();
+		iframe.sandbox = flags;
+		return iframe;
+	};
 
-    // listener handler of parent
-    window.addEventListener("message", event => {
-        if (origin == null || event.origin == origin) {
-            var cid = event.data.cid;
-            var data = event.data.data;
-            var event_name = event.data.event_name;
-            if (event_name) { // recieving response from parent or child
+	/**
+	* 
+	*/
+	this.setSandBoxedIframe = (iframe, flags) => {
+		iframe.name = uuidv4();
+		iframe.sandbox = flags;
+	};
+	
+	/**
+	* 
+	*/
+	this.listener = function(origin) {
 
-                // hit the general listener
-                window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data})); 
+		const namespace = uuidv4(),               // create a hash for the namespace
+			  childnamespace = uuidv4(),          // create a hash for the child namespace
+			  parentnamespace = uuidv4(),         // create a hash for a parent namespace
+			  callbackListeners = {};             // create a mapping for callback listeners
 
-                if (event.data.name) { // came from child
-                    // hit the general child listener
-                    window.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
-                    // hit the specific child listener
-                    var iframe = document.querySelector("iframe[name='" + event.data.name + "']"); 
-                    iframe.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
-                } else {
-                    // hit the general parent listener
-                    window.dispatchEvent(new CustomEvent(parentnamespace + event_name, {detail:event.data})); 
-                }
-            } else {  // in response to sending data to parent or child
-                var func = callbackListeners[cid];
-                if (func) func(data);
-            }
-        }
-    }, false);
+		// listener handler of parent
+		window.addEventListener("message", event => {
+			if (origin == null || event.origin == origin) {
+				var cid = event.data.cid;
+				var data = event.data.data;
+				var event_name = event.data.event_name;
+				if (event_name) { // recieving response from parent or child
 
-    var setListenerHelper = (scope, namespace, event_name, cb) => {
-        scope.addEventListener(namespace + event_name, event => {
-            var data = event.detail.data;
-            var name = event.detail.name;
-            var iframe = document.querySelector("iframe[name='" + name + "']");
-            cb(data, iframe || parent, data => {
-                var cid = event.detail.cid;
-                var res = {data, cid};
-                if (name) {  // if came from child
-                    postHelper(iframe, res);
-                } else {  // if came from parent
-                    postHelper(parent, res);
-                }
-            });
-        }, false); 
-    };
+					// hit the general listener
+					window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data})); 
 
-    // send message to child or parent
-    var postMessage = (to, event_name, data, cb, processor) => {
-        var cid = hashGenerator();
-        callbackListeners[cid] = cb;
-        var obj = {event_name, data, cid};
-        processor(obj);
-        postHelper(to, obj);
-    };
+					if (event.data.name) { // came from child
+						// hit the general child listener
+						window.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
+						// hit the specific child listener
+						var iframe = document.querySelector("iframe[name='" + event.data.name + "']"); 
+						iframe.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
+					} else {
+						// hit the general parent listener
+						window.dispatchEvent(new CustomEvent(parentnamespace + event_name, {detail:event.data})); 
+					}
+				} else {  // in response to sending data to parent or child
+					var func = callbackListeners[cid];
+					if (func) func(data);
+				}
+			}
+		}, false);
 
-    var postHelper = (to, data) => {
-        if (to == parent) { // post to parent
-            to.postMessage(data, "*");
-        } else { // post to child which you need to wait for load
-            var cw = to.contentWindow;
-            cw.postMessage(data, "*");
-        }
-    };
+		var setListenerHelper = (scope, namespace, event_name, cb) => {
+			scope.addEventListener(namespace + event_name, event => {
+				var data = event.detail.data;
+				var name = event.detail.name;
+				var iframe = document.querySelector("iframe[name='" + name + "']");
+				cb(data, iframe || parent, data => {
+					var cid = event.detail.cid;
+					var res = {data, cid};
+					if (name) {  // if came from child
+						postHelper(iframe, res);
+					} else {  // if came from parent
+						postHelper(parent, res);
+					}
+				});
+			}, false); 
+		};
 
-    /**
-    * 
-    */
-    this.createSandBoxedIframe = (src, flags) => {
-        var iframe = document.createElement('iframe');
-        iframe.src = src;
-        iframe.name = hashGenerator();
-        iframe.sandbox = flags;
-        return iframe;
-    };
+		// send message to child or parent
+		var postMessage = (to, event_name, data, cb, processor) => {
+			var cid = uuidv4();
+			callbackListeners[cid] = cb;
+			var obj = {event_name, data, cid};
+			processor(obj);
+			postHelper(to, obj);
+		};
 
-    /**
-    * 
-    */
-    this.setSandBoxedIframe = (iframe, flags) => {
-        iframe.name = hashGenerator();
-        iframe.sandbox = flags;
-    };
+		var postHelper = (to, data) => {
+			if (to == parent) { // post to parent
+				to.postMessage(data, "*");
+			} else { // post to child which you need to wait for load
+				var cw = to.contentWindow;
+				cw.postMessage(data, "*");
+			}
+		};
 
-    /**
-    * 
-    */
-    this.postMessageToParent = (event_name, data, cb) => {
-        postMessage(parent, event_name, data, cb, obj => {
-            obj.name = window.name;
-        });
-    };
+		/**
+		* 
+		*/
+		this.postMessageToParent = (event_name, data, cb) => {
+			postMessage(parent, event_name, data, cb, obj => {
+				obj.name = window.name;
+			});
+		};
 
-    /**
-    * 
-    */
-    this.postMessageToChild = (iframes, event_name, data, cb) => {
-        iframes.forEach(iframe => {
-            postMessage(iframe, event_name, data, cb, () => {});
-        });
-    };
+		/**
+		* 
+		*/
+		this.postMessageToChild = (iframes, event_name, data, cb) => {
+			iframes.forEach(iframe => {
+				postMessage(iframe, event_name, data, cb, () => {});
+			});
+		};
 
-    // set listener on self
-    /**
-    * 
-    */
-    this.setIframeListener = (event_name, cb) => {
-        setListenerHelper(window, namespace, event_name, cb);
-    };
+		// set listener on self
+		/**
+		* 
+		*/
+		this.setIframeListener = (event_name, cb) => {
+			setListenerHelper(window, namespace, event_name, cb);
+		};
 
-    this.setParentIframeListener = (event_name, cb) => {
-        setListenerHelper(window, parentnamespace, event_name, cb);
-    };
+		this.setParentIframeListener = (event_name, cb) => {
+			setListenerHelper(window, parentnamespace, event_name, cb);
+		};
 
-    this.setChildrenIframeListener = (iframes, event_name, cb) => {
-        iframes.forEach(iframe => {
-            setListenerHelper(iframe, childnamespace, event_name, cb);
-        });
-    };
+		this.setChildrenIframeListener = (iframes, event_name, cb) => {
+			iframes.forEach(iframe => {
+				setListenerHelper(iframe, childnamespace, event_name, cb);
+			});
+		};
 
-    this.setAnyChildIframeListener = (event_name, cb) => {
-        setListenerHelper(window, childnamespace, event_name, cb);
-    };
+		this.setAnyChildIframeListener = (event_name, cb) => {
+			setListenerHelper(window, childnamespace, event_name, cb);
+		};
+	};
 }));
