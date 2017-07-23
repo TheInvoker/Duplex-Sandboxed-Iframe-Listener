@@ -102,6 +102,14 @@
     /**
     * 
     */
+    this.setSandBoxedIframe = (iframe, flags) => {
+        iframe.name = hashGenerator();
+        iframe.sandbox = flags;
+    };
+
+    /**
+    * 
+    */
     this.postMessageToParent = (event_name, data, cb) => {
         postMessage(parent, event_name, data, cb, obj => {
             obj.name = window.name;
