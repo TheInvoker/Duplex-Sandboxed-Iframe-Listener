@@ -19,20 +19,16 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 ## Actual API
 
-Create an iframe that can post and listen, and add to DOM:
+Create a DSIL iframe (iframe DOM element) that can post and listen, and add to DOM:
 ```
 // params are source and sandbox flags
 var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); 
-// ifr is a normal iframe DOM element
-document.body.appendChild(ifr); 
 ```
 
-Use an existing iframe:
+Create a DSIL iframe (iframe DOM element) using an existing iframe, and add to DOM:
 ```
 // params are source and sandbox flags
 var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
-// ifr is a normal iframe DOM element
-document.body.appendChild(ifr); 
 ```
 
 Create a communications object:
@@ -58,7 +54,7 @@ ifl.fromParent("myevent", (data, parent, cb) => {
 
 Listen for events from specified children:
 ```
-// iframes is an iframe or an array of iframes
+// iframes is a DSIL iframe or an array of DSIL iframes
 ifl.fromChild(iframes, "myevent", (data, iframe, cb) => {   
 	alert(data);
 	cb("myevent_callback"); 
@@ -76,8 +72,8 @@ ifl.fromAnyChild("myevent", (data, iframe, cb) => {
 
 Send data to child:
 ```
-// only sends once its load event runs which only happens when you add it to the DOM
-// iframes is an iframe or an array of iframes
+// only sends once its load event triggers after adding to the DOM
+// iframes is a DSIL iframe or an array of DSIL iframes
 ifl.toChild(iframes, "myevent_forchild", "some data", data => { 
 	alert(data);
 });
