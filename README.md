@@ -24,7 +24,23 @@ Create a communications object:
 var ifl = new DSIL.listener(); // has 1 optional parameter for origin
 ```
 
-Listen for events from parent or child:
+Create an iframe that can post and listen, and add to DOM:
+```
+// params are source and sandbox flags
+var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); 
+// ifr is a normal iframe DOM element
+document.body.appendChild(ifr); 
+```
+
+Use an existing iframe:
+```
+// params are source and sandbox flags
+var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
+// ifr is a normal iframe DOM element
+document.body.appendChild(ifr); 
+```
+
+Listen for events from the parent or any child:
 ```
 ifl.fromAny("myevent", (data, parentoriframe, cb) => { 
 	alert(data);
@@ -56,20 +72,6 @@ ifl.fromAnyChild("myevent", (data, iframe, cb) => {
 	alert(data);
 	cb("myevent_callback"); 
 });
-```
-
-Create an iframe that can post and listen, and add to DOM:
-```
-// params are source and sandbox flags
-var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); 
-document.body.appendChild(ifr); // ifr is a normal iframe DOM element
-```
-
-Use an existing iframe:
-```
-// params are source and sandbox flags
-var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
-document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 ```
 
 Send data to child:
