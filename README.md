@@ -17,7 +17,7 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 ![alt text](https://raw.githubusercontent.com/TheInvoker/Duplex-Sandboxed-Iframe-Listener/master/DISL.png)
 
-## Actual API
+## API
 
 Create a DSIL iframe (iframe DOM element):
 ```
