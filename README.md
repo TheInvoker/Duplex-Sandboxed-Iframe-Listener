@@ -1,5 +1,5 @@
 # Duplex-Sandboxed-Iframe-Listener (DSIL)
-### pronounced like 'diesel'
+### [diesel]
 A fully native es6 javascript library to handle duplex asynchronous communications between parent and child sandboxed iframes.
 
 ## How to run demo:
@@ -21,12 +21,12 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 Create a communications object:
 ```
-var ifl = new iframeListener.listener(); // has 1 optional parameter for origin
+var ifl = new DSIL.listener(); // has 1 optional parameter for origin
 ```
 
 Listen for events from parent or child:
 ```
-ifl.setIframeListener("myevent", (data, parentoriframe, cb) => { 
+ifl.fromAny("myevent", (data, parentoriframe, cb) => { 
 	alert(data);
 	cb("myevent_callback");  // callback that accepts 1 paramater which is your data you want to send back
 });
@@ -34,7 +34,7 @@ ifl.setIframeListener("myevent", (data, parentoriframe, cb) => {
 
 Listen for events from the parent:
 ```
-ifl.setParentIframeListener("myevent", (data, parent, cb) => { 
+ifl.fromParent("myevent", (data, parent, cb) => { 
 	alert(data);
 	cb("myevent_callback"); 
 });
@@ -42,7 +42,8 @@ ifl.setParentIframeListener("myevent", (data, parent, cb) => {
 
 Listen for events from specified children:
 ```
-ifl.setChildrenIframeListener(iframes, "myevent", (data, iframe, cb) => {   // iframes is an array of iframes
+// iframes is an iframe or an array of iframes
+ifl.fromChild(iframes, "myevent", (data, iframe, cb) => {   
 	alert(data);
 	cb("myevent_callback"); 
 });
@@ -50,7 +51,8 @@ ifl.setChildrenIframeListener(iframes, "myevent", (data, iframe, cb) => {   // i
 
 Listen for events from any children:
 ```
-ifl.setAnyChildIframeListener("myevent", (data, iframe, cb) => {   // iframes is an array of iframes
+// iframes is an array of iframes
+ifl.fromAnyChild("myevent", (data, iframe, cb) => {   
 	alert(data);
 	cb("myevent_callback"); 
 });
@@ -58,26 +60,30 @@ ifl.setAnyChildIframeListener("myevent", (data, iframe, cb) => {   // iframes is
 
 Create an iframe that can post and listen, and add to DOM:
 ```
-var ifr = iframeListener.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
+// params are source and sandbox flags
+var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); 
 document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 ```
 
 Use an existing iframe:
 ```
-var ifr = iframeListener.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); // params are source and sandbox flags
+// params are source and sandbox flags
+var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
 document.body.appendChild(ifr); // ifr is a normal iframe DOM element
 ```
 
 Send data to child:
 ```
-ifl.postMessageToChild(iframes, "myevent_forchild", "some data", data => { // only sends once its load event runs which only happens when you add it to the DOM, iframes is an array of iframes
+// only sends once its load event runs which only happens when you add it to the DOM
+// iframes is an iframe or an array of iframes
+ifl.toChild(iframes, "myevent_forchild", "some data", data => { 
 	alert(data);
 });
 ```
 
 Send data to parent:
 ```
-ifl.postMessageToParent("myevent_forparent", "some data", data => {
+ifl.toParent("myevent_forparent", "some data", data => {
 	alert(data);
 });
 ```

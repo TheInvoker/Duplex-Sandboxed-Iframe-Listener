@@ -2,27 +2,27 @@
 <html>
     <head>
         <title>A</title>
-        <script src="iframe.js"></script>
+        <script src="dsil.js"></script>
     </head>
     <body>
         A
         <br/>
         <script>
             
-            var ifr = iframeListener.createSandBoxedIframe("B.html", "allow-forms allow-modals allow-scripts allow-popups");
+            var ifr = DSIL.createSandBoxedIframe("B.html", "allow-forms allow-modals allow-scripts allow-popups");
             document.body.appendChild(ifr);
 
-			var ifl = new iframeListener.listener();
+			var ifl = new DSIL.listener();
 			
-            ifl.setChildrenIframeListener([ifr], "event1", (data, iframe, cb) => {
+            ifl.fromChild(ifr, "event1", (data, iframe, cb) => {
                 alert(data);
                 cb("sendfromchild_callback");
             });
 
-            ifl.setChildrenIframeListener([ifr], "childReady", (data, iframe, cb) => {
+            ifl.fromChild(ifr, "childReady", (data, iframe, cb) => {
                 cb({});
                 
-                ifl.postMessageToChild([iframe], "event2", "sendfromparent", data => {
+                ifl.toChild(iframe, "event2", "sendfromparent", data => {
                     alert(data);
                 });
             });

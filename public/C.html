@@ -2,23 +2,23 @@
 <html>
     <head>
         <title>C</title>
-        <script src="iframe.js"></script>
+        <script src="dsil.js"></script>
     </head>
     <body>
         C
         <script>
 
-			var ifl = new iframeListener.listener();
+			var ifl = new DSIL.listener();
 				
-            ifl.setParentIframeListener("event4", (data, parent, cb) => {
+            ifl.fromParent("event4", (data, parent, cb) => {
                 alert(data);
                 cb("sendtograndchild_callback");
             });
 
-            ifl.postMessageToParent("childReady", {}, data => {
+            ifl.toParent("childReady", {}, data => {
             });
 
-            ifl.postMessageToParent("event3", "sendfromggrandchild", data => {
+            ifl.toParent("event3", "sendfromggrandchild", data => {
                 alert(data);
             });
         </script>

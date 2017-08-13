@@ -1,16 +1,16 @@
 /*!
- * Duplex Sandboxed Iframe Listener Library v1.0.0
+ * Duplex Sandboxed Iframe Listener (DSIL) Library v1.0.0
  *
  * Copyright 2017
  *
- * Date: 2017-07-23 (July 23)
+ * Date: 2017-08-12
  */
 
 ((factory => {
     if (typeof define === 'function' && define.amd) {
         return define([], () => factory);
     }
-    this.iframeListener = factory;
+    this.DSIL = factory;
 })(new function() {
 	
 	/**
@@ -56,10 +56,8 @@
 				var data = event.data.data;
 				var event_name = event.data.event_name;
 				if (event_name) { // recieving response from parent or child
-
 					// hit the general listener
 					window.dispatchEvent(new CustomEvent(namespace + event_name, {detail:event.data})); 
-
 					if (event.data.name) { // came from child
 						// hit the general child listener
 						window.dispatchEvent(new CustomEvent(childnamespace + event_name, {detail:event.data}));
@@ -113,42 +111,58 @@
 		};
 
 		/**
-		* 
-		*/
-		this.postMessageToParent = (event_name, data, cb) => {
+		 *  Post to parent
+		 */
+		this.toParent = (event_name, data, cb) => {
 			postMessage(parent, event_name, data, cb, obj => {
 				obj.name = window.name;
 			});
 		};
 
 		/**
-		* 
-		*/
-		this.postMessageToChild = (iframes, event_name, data, cb) => {
-			iframes.forEach(iframe => {
-				postMessage(iframe, event_name, data, cb, () => {});
-			});
+		 *  Post to specified children
+		 */
+		this.toChild = (iframes, event_name, data, cb) => {
+			if (iframes.constructor === Array) {
+				iframes.forEach(iframe => {
+					postMessage(iframe, event_name, data, cb, () => {});
+				});
+			} else {
+				postMessage(iframes, event_name, data, cb, () => {});
+			}
 		};
 
-		// set listener on self
 		/**
-		* 
-		*/
-		this.setIframeListener = (event_name, cb) => {
+		 *  Listen from parent or any child
+		 */
+		this.fromAny = (event_name, cb) => {
 			setListenerHelper(window, namespace, event_name, cb);
 		};
 
-		this.setParentIframeListener = (event_name, cb) => {
+		/**
+		 *  Listen from only parent
+		 */
+		this.fromParent = (event_name, cb) => {
 			setListenerHelper(window, parentnamespace, event_name, cb);
 		};
-
-		this.setChildrenIframeListener = (iframes, event_name, cb) => {
-			iframes.forEach(iframe => {
-				setListenerHelper(iframe, childnamespace, event_name, cb);
-			});
+		
+		/**
+		 *  Listen from only specified children
+		 */
+		this.fromChild = (iframes, event_name, cb) => {
+			if (iframes.constructor === Array) {
+				iframes.forEach(iframe => {
+					setListenerHelper(iframe, childnamespace, event_name, cb);
+				});
+			} else {
+				setListenerHelper(iframes, childnamespace, event_name, cb);
+			}
 		};
-
-		this.setAnyChildIframeListener = (event_name, cb) => {
+		
+		/**
+		 *  Listen from any child
+		 */
+		this.fromAnyChild = (event_name, cb) => {
 			setListenerHelper(window, childnamespace, event_name, cb);
 		};
 	};
