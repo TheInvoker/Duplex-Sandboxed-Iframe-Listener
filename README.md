@@ -19,7 +19,7 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 ## Actual API
 
-Create a DSIL iframe (iframe DOM element) that can post and listen:
+Create a DSIL iframe (iframe DOM element):
 ```
 // params are source and sandbox flags
 var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals allow-scripts allow-popups"); 
