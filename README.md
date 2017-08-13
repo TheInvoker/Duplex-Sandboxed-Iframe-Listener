@@ -28,7 +28,7 @@ var ifr = DSIL.getSandBoxedIframe("childpage.html", "allow-forms allow-modals al
 Create a DSIL iframe (iframe DOM element) using an existing iframe:
 ```
 // params are source and sandbox flags
-var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
+DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
 ```
 
 Create a communications object:
