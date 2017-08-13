@@ -34,9 +34,8 @@
 	/**
 	* 
 	*/
-	this.setSandBoxedIframe = (iframe, flags) => {
+	this.setSandBoxedIframe = (iframe) => {
 		iframe.name = uuidv4();
-		iframe.sandbox = flags;
 	};
 	
 	/**
