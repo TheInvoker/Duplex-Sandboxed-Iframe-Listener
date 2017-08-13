@@ -1,6 +1,6 @@
 # Duplex-Sandboxed-Iframe-Listener (DSIL)
 ### [diesel]
-A fully native es6 javascript library to handle duplex asynchronous communications between parent and child sandboxed iframes.
+A fully native es6 javascript library (require.js compatible) to handle duplex asynchronous communications between parent and child sandboxed iframes.
 
 ## How to run demo:
 
@@ -19,11 +19,6 @@ You will then get 8 alert messages. A.html has an iframe that loads B.html and B
 
 ## Actual API
 
-Create a communications object:
-```
-var ifl = new DSIL.listener(); // has 1 optional parameter for origin
-```
-
 Create an iframe that can post and listen, and add to DOM:
 ```
 // params are source and sandbox flags
@@ -38,6 +33,11 @@ Use an existing iframe:
 var ifr = DSIL.setSandBoxedIframe(iframe, "allow-forms allow-modals allow-scripts allow-popups"); 
 // ifr is a normal iframe DOM element
 document.body.appendChild(ifr); 
+```
+
+Create a communications object:
+```
+var ifl = new DSIL.listener(); // has 1 optional parameter for origin
 ```
 
 Listen for events from the parent or any child:
